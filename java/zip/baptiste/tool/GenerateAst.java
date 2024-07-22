@@ -22,6 +22,7 @@ public class GenerateAst {
         String path = outputDir + "/" + baseName + ".java";
         try (PrintWriter writer = new PrintWriter(path, "UTF-8")) {
             // writer.println("package zip.baptiste.lox;");
+            writer.println("// GENERATED CODE - MODIFY WITH CAUTION");
             writer.println();
             writer.println("import java.util.List;");
             writer.println();

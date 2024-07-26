@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2024
+** PERSONAL PROJECT, 2024
 ** crafting-interpreters [WSL : Ubuntu]
 ** File description:
 ** memory

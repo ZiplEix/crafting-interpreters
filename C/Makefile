@@ -1,5 +1,5 @@
 ##
-## EPITECH PROJECT, 2023
+## PERSONAL PROJECT, 2023
 ## myteams [WSL : Debian]
 ## File description:
 ## Makefile

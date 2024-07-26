@@ -1,0 +1,48 @@
+// Fibonacci function using recursion
+fun fibRecursive(n) {
+    if (n <= 1) return n;
+    return fibRecursive(n - 1) + fibRecursive(n - 2);
+}
+
+// Fibonacci function using iteration
+fun fibIterative(n) {
+    if (n <= 1) return n;
+    var a = 0;
+    var b = 1;
+    for (var i = 2; i <= n; i = i + 1) {
+        var temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return b;
+}
+
+// Function to calculate the sum of first 'count' Fibonacci numbers using recursion
+fun sumFibRecursive(count) {
+    var sum = 0;
+    for (var i = 0; i < count; i = i + 1) {
+        sum = sum + fibRecursive(i);
+    }
+    return sum;
+}
+
+// Function to calculate the sum of first 'count' Fibonacci numbers using iteration
+fun sumFibIterative(count) {
+    var sum = 0;
+    for (var i = 0; i < count; i = i + 1) {
+        sum = sum + fibIterative(i);
+    }
+    return sum;
+}
+
+// Calculate and print the sum of the first 30 Fibonacci numbers using recursion
+var count = 30;
+print "Sum of first " + count + " Fibonacci numbers (recursive): " + sumFibRecursive(count);
+
+// Calculate and print the sum of the first 30 Fibonacci numbers using iteration
+print "Sum of first " + count + " Fibonacci numbers (iterative): " + sumFibIterative(count);
+
+// Calculate and print a large Fibonacci number to increase runtime
+var largeNumber = 35;
+print "The " + largeNumber + "th Fibonacci number (recursive): " + fibRecursive(largeNumber);
+print "The " + largeNumber + "th Fibonacci number (iterative): " + fibIterative(largeNumber);

@@ -103,12 +103,12 @@ static Token string() {
 }
 
 static Token number() {
-    while (isDigit(peek())) advance();
+    while (isdigit(peek())) advance();
 
-    if (peek() == '.' && isDigit(peekNext())) {
+    if (peek() == '.' && isdigit(peekNext())) {
         advance();
 
-        while (isDigit(peek())) advance();
+        while (isdigit(peek())) advance();
     }
 
     return makeToken(TOKEN_NUMBER);

@@ -82,6 +82,8 @@ static void skipWhitespace() {
         }
         if (isspace(c)) {
             advance();
+        } else {
+            break;
         }
     }
 }

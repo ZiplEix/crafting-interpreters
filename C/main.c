@@ -24,6 +24,10 @@ static void repl() {
             break;
         }
 
+        if (strcmp(line, "exit\n") == 0) {
+            break;
+        }
+
         interpret(line);
     }
 }

@@ -7,10 +7,15 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
+#include <float.h>
+#include <stdlib.h>
 
 #include "clox.h"
 #include "vm.h"
 #include "compiler.h"
+#include "memory.h"
+#include "object.h"
 #ifdef DEBUG_TRACE_EXECUTION
     #include "debug.h"
 #endif
@@ -40,9 +45,11 @@ static void runtimeError(const char* format, ...) {
 
 void initVM() {
     resetStack();
+    vm.objects = NULL;
 }
 
 void freeVM() {
+    freeObjects();
 }
 
 void push(Value value) {
@@ -63,6 +70,59 @@ static bool isFalsey(Value value) {
     return IS_NIL(value)
            || (IS_BOOL(value) && !AS_BOOL(value))
            || (IS_NUMBER(value) && AS_NUMBER(value) == 0);
+}
+
+static void concatenate() {
+    ObjString *b = AS_STRING(pop());
+    ObjString *a = AS_STRING(pop());
+
+    int lenght = a->length + b->length;
+    char *chars = ALLOCATE(char, lenght + 1);
+    memcpy(chars, a->chars, a->length);
+    memcpy(chars + a->length, b->chars, b->length);
+    chars[lenght] = '\0';
+
+    ObjString *result = takeString(chars, lenght);
+    push(OBJ_VAL(result));
+}
+
+static ObjString *numberToString(double number) {
+    char *text = calloc(DBL_DIG + 2, sizeof(char));
+    int length = sprintf(text, "%g", number);
+    text[length] = '\0';
+    return takeString(text, length);
+}
+
+static char add() {
+    char res = 0;
+
+    if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+        concatenate();
+    } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
+        double b = AS_NUMBER(pop());
+        double a = AS_NUMBER(pop());
+        push(NUMBER_VAL(a + b));
+    } else if (IS_STRING(peek(0)) && IS_NUMBER(peek(1))) {
+        ObjString *b = AS_STRING(pop());
+        double a = AS_NUMBER(pop());
+
+        ObjString *aString = numberToString(a);
+        push(OBJ_VAL(aString));
+        push(OBJ_VAL(b));
+
+        concatenate();
+    } else if (IS_NUMBER(peek(0)) && IS_STRING(peek(1))) {
+        double a = AS_NUMBER(pop());
+        ObjString *aString = numberToString(a);
+        push(OBJ_VAL(aString));
+        concatenate();
+    } else {
+        runtimeError("Operands must be two numbers or two strings.");
+        // return INTERPRET_RUNTIME_ERROR;
+        res = 1;
+    }
+
+    return res;
 }
 
 static InterpretResult run() {
@@ -111,7 +171,10 @@ static InterpretResult run() {
             }
             case OP_GREATER:    BINARY_OP(BOOL_VAL, >); break;
             case OP_LESS:       BINARY_OP(BOOL_VAL, <); break;
-            case OP_ADD:        BINARY_OP(NUMBER_VAL, +); break;
+            case OP_ADD: {
+                if (add()) return INTERPRET_RUNTIME_ERROR;
+                break;
+            }
             case OP_SUBTRACT:   BINARY_OP(NUMBER_VAL, -); break;
             case OP_MULTIPLY:   BINARY_OP(NUMBER_VAL, *); break;
             case OP_DIVIDE:     BINARY_OP(NUMBER_VAL, /); break;
